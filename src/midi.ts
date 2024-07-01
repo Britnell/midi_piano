@@ -37,7 +37,7 @@ let lpFilter: BiquadFilterNode | null = null;
 const MAX_POLYPHONY = 10;
 
 // Active notes
-const activeNotes = ref(new Map<number, OscillatorNode[]>());
+const activeNotes = ref(new Map<number, OscillatorNode>());
 
 export const getMidiKey = (note:number)=>{
   const names = 'C,C#,D,D#,E,F,F#,G,G#,A,A#,B'.split(',')
@@ -50,15 +50,23 @@ export const getMidiKey = (note:number)=>{
 export const createKeyboard = ()=> new Array(12 * 4).fill(1).map((v,i)=>( 36 + i)).map(getMidiKey)
 
 
-export function useMIDINote(selectedDevice: Ref<string> ) {
+interface Instrument {
+  real: number[], im:number[]
+}
+
+export function useMIDINote(selectedDevice: Ref<string>, instrument: Ref<Instrument> ) {
   
-  watch(selectedDevice, (newDevice) => {    
-    if (newDevice) {
-      if (!audioContext) initAudio();
-      // setupMIDIAccess(newDevice);
-      navigator.requestMIDIAccess().then(midiAccess => {
-        const input = midiAccess.inputs.get(newDevice);
+  watch([selectedDevice], () => {    
+    console.log(selectedDevice.value );
+    
+    if (!selectedDevice.value) return 
+
+    if (!audioContext) initAudio();
+
+    navigator.requestMIDIAccess().then(midiAccess => {
+        const input = midiAccess.inputs.get(selectedDevice.value);
         if (!input) return
+
         input.onmidimessage = (event: MIDIMessageEvent) => {
           const [status, note, velocity] = event.data;
           const command = status >> 4;
@@ -67,7 +75,7 @@ export function useMIDINote(selectedDevice: Ref<string> ) {
             stopNote(note);
           }
           else if (command === 9) {
-            playMidiNote(note, velocity);
+            playMidiNote(note, velocity,instrument.value);
           }
           
           
@@ -75,22 +83,23 @@ export function useMIDINote(selectedDevice: Ref<string> ) {
             if(!masterGain || !audioContext) return
             masterGain.gain.setValueAtTime(0.7 / div, audioContext.currentTime);
             
-          };
+        };
 
       });
-    }
+    
   });
 
   return { activeNotes }
 }
 
-const createOscillator = (frequency: number, velocity: number, type: 'sine' | 'triangle' ): OscillatorNode => {
+const createOscillator = (frequency: number, velocity: number, instrument: Instrument ): OscillatorNode => {
   if (!audioContext || !masterGain) throw new Error('Audio not initialized');
 
   const osc = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
+  const wave = audioContext.createPeriodicWave(new Float32Array(instrument.real),new Float32Array(instrument.im) );
+  osc.setPeriodicWave(wave);
 
-  osc.type = type;
   osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
 
   const velocityGain = velocity / 127;
@@ -115,43 +124,28 @@ const initAudio = () => {
   lpFilter.connect(audioContext.destination);
 };
 
-const handleMIDIMessage = (event: MIDIMessageEvent) => {
-const [status, note, velocity] = event.data;
-const command = status >> 4;
 
-if (command === 8 || (command === 9 && velocity === 0))
-  stopNote(note);
-else if (command === 9) 
-  playMidiNote(note, velocity);
-
-
-const div = activeNotes.value.size >0 ? Math.sqrt(activeNotes.value.size) : 1;
-  if(!masterGain || !audioContext) return
-  masterGain.gain.setValueAtTime(0.7 / div, audioContext.currentTime);
-  
-};
-
-
-const playMidiNote = (note: number, velocity: number) => {
+const playMidiNote = (note: number, velocity: number, instrument:Instrument) => {
   if (activeNotes.value.size >= MAX_POLYPHONY) return;
 
   const frequency = 440 * Math.pow(2, (note - 69) / 12);
-  const osc = createOscillator(frequency, velocity, 'sine')
-  const harmonic = createOscillator(frequency *2, velocity /2, 'sine')
+  const osc = createOscillator(frequency, velocity, instrument)
+  osc.start(audioContext?.currentTime)
 
-  osc.start(audioContext?.currentTime);
-  harmonic.start(audioContext?.currentTime);
-
-  activeNotes.value.set(note, [osc, harmonic]);
+  activeNotes.value.set(note, osc);
 };
 
 const stopNote = (note: number) => {
-  const oscillators = activeNotes.value.get(note);
-  if (oscillators) {
-    oscillators.forEach(osc => {
-      osc.stop();
-      osc.disconnect();
-    });
-    activeNotes.value.delete(note);
-  }
+  const osc = activeNotes.value.get(note);
+  if(!osc) return
+  osc?.stop()
+  osc?.disconnect()
+  activeNotes.value.delete(note);
+
+  // if (oscillators) {
+  //   oscillators.forEach(osc => {
+  //     osc.stop();
+  //     osc.disconnect();
+  //   });
+  // }
 };

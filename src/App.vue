@@ -3,12 +3,18 @@ import { ref, onMounted, watch, compile } from 'vue';
 import { initMIDI, useMIDINote, type MIDIDevice } from './midi';
 import Keyboard from './components/Keyboard.vue'
 import Notation from './components/Notation.vue'
+import Instruments from './components/Instruments.vue'
+import { cachedRef } from './lib';
 
+const audioEnabled = ref(false)
+const instrument = ref({
+      real: [0, 1, 0.3, 0.1],
+      im: [0,0,0,0]
+    })
 
 const selectedDevice = ref('');
 const midiDevices = ref<MIDIDevice[]>([]);
-const { activeNotes } = useMIDINote(selectedDevice);
-const audioEnabled = ref(false)
+const { activeNotes } = useMIDINote(selectedDevice,instrument);
 
 // ENABLE SOUND IX
 onMounted(()=>{
@@ -42,13 +48,16 @@ watch(selectedDevice,(next)=> localStorage.setItem(saveMidiKey,next) )
       <p>Please click or press any key to enable audio</p>
     </div>
     <h1>MIDI Piano Web App</h1>
-    <select v-model="selectedDevice">
-      <option value="">Select MIDI input</option>
-      <option v-for="device in midiDevices" :key="device.id" :value="device.id">
-        {{ device.name }}
-      </option>
-    </select>
-    <div id="keyboard"></div>
+    <div>
+
+      <select v-model="selectedDevice">
+        <option value="">Select MIDI input</option>
+        <option v-for="device in midiDevices" :key="device.id" :value="device.id">
+          {{ device.name }}
+        </option>
+      </select>
+    </div>
+    <Instruments v-model:instrument="instrument" />
     <Keyboard :activeNotes="activeNotes" />
     <Notation :activeNotes="activeNotes" />
   </div>
