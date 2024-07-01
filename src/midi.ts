@@ -40,7 +40,7 @@ const MAX_POLYPHONY = 10;
 const activeNotes = ref(new Map<number, OscillatorNode>());
 
 export const getMidiKey = (note:number)=>{
-  const names = 'C,C#,D,D#,E,F,F#,G,G#,A,A#,B'.split(',')
+  const names = 'C,C♯,D,D♯,E,F,F♯,G,G♯,A,A♯,B'.split(',')
   let pitch = note % 12
   const oct = Math.floor(note / 12) - 1
   return `${names[pitch]}${oct}`
@@ -56,11 +56,8 @@ interface Instrument {
 
 export function useMIDINote(selectedDevice: Ref<string>, instrument: Ref<Instrument> ) {
   
-  watch([selectedDevice], () => {    
-    console.log(selectedDevice.value );
-    
+  watch([selectedDevice], () => {        
     if (!selectedDevice.value) return 
-
     if (!audioContext) initAudio();
 
     navigator.requestMIDIAccess().then(midiAccess => {

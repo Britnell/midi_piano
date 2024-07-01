@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed } from 'vue';
 import { createKeyboard, getMidiKey } from '../midi';
 
 const props = defineProps(['activeNotes'])
@@ -7,12 +7,20 @@ const activeKeys = computed(() => Array.from<number>(props.activeNotes.keys()).m
 
 const keyboard = createKeyboard()
 
-// watch(activeKeys,()=>{    
-    // console.log(activeKeys.value);     
-// },{ deep: true})
-
-
 </script>
+
+<template>
+    <div class="keyboard ">
+        <div class="key"
+        :class="activeKeys.includes(key)?'pressed':' '"
+         v-for="key in keyboard" :key="key"
+         >
+            <span>{{key}}</span>
+        </div>
+    </div>
+
+</template>
+
 <style scoped>
 .keyboard {
     display: flex;
@@ -48,14 +56,3 @@ const keyboard = createKeyboard()
     color: black;
 }
 </style>
-<template>
-    <div class="keyboard ">
-        <div class="key"
-        :class="activeKeys.includes(key)?'pressed':' '"
-         v-for="key in keyboard" :key="key"
-         >
-            <span>{{key}}</span>
-        </div>
-    </div>
-
-</template>

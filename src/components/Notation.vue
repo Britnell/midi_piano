@@ -17,7 +17,7 @@ const STAFF_Y = 50;
 const BASS_Y = 200;
 
 const LINE_SPACING = 10;
-const STAFF_HEIGHT = 4 * LINE_SPACING;
+// const STAFF_HEIGHT = 4 * LINE_SPACING;
 const NOTE_RADIUS = 5;
 
 
@@ -45,17 +45,21 @@ function drawNotation(notes: number[]) {
         notes.forEach(note=>{
             drawTrebleNote(ctx,note)
             drawBassNote(ctx,note)
-            // Note
-            // ledger lines if needed
-            // if (y < STAFF_Y || (y > STAFF_Y + 4 * LINE_SPACING && y < STAFF_Y + STAFF_HEIGHT) || y > STAFF_Y + STAFF_HEIGHT + 4 * LINE_SPACING) {
-            // }
-            
         })
 
 }
 
 const posMinusBlacks = (p:number)=>{
     return [0, 1,1, 2,2,2, 3,3,4,4,5,5 ][p]
+}
+
+const drawSharp = (ctx:CanvasRenderingContext2D, p:number, x:number, y:number)=>{
+    const isBlack = [1,3,6,8,10]
+    if(!isBlack.includes(p)) return
+
+    ctx.font = '22px serif';
+    ctx.fillText('♯', x -18, y+6);
+
 }
 
 const drawTrebleNote = (ctx : CanvasRenderingContext2D, note:number)=>{
@@ -67,6 +71,7 @@ const drawTrebleNote = (ctx : CanvasRenderingContext2D, note:number)=>{
     const y = STAFF_Y + LINE_SPACING * 5 - LINE_SPACING/2 *  pos - (oct-4) * 7 * LINE_SPACING/2
     const x = 150 + 2.5 * LINE_SPACING * ( pos + (oct-4) * 7 )
     drawNote(ctx, x, y )
+    drawSharp(ctx,p,x,y)
     
     // draw lines bot
     if(note<=61) drawLine({ctx, x, y: STAFF_Y + LINE_SPACING *5 })
@@ -88,6 +93,7 @@ const drawBassNote = (ctx:CanvasRenderingContext2D, note:number)=>{
     const y = BASS_Y + LINE_SPACING * 6 - pos * LINE_SPACING/2 - (oct-2) * 7 * LINE_SPACING/2 
     const x = 150 + 2.5 * LINE_SPACING * ( pos + (oct-2) * 7 )
     drawNote(ctx, x, y )
+    drawSharp(ctx,p,x,y)
     
     // Lines
     if(note>=60) drawLine({ctx, x, y: BASS_Y - LINE_SPACING *1 })
