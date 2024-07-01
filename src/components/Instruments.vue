@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { createKeyboard, getMidiKey } from '../midi';
+import { onMounted, watch } from 'vue';
 import { cachedRef } from '../lib';
 
-const props = defineProps(['instrument'])
 const emit = defineEmits<{
   (e: 'update:instrument', value: { real: number[], im: number[] }): void
 }>();
@@ -24,19 +22,17 @@ const instrumentCoeff = {
     piano: { real: [0, 0.4, 0.4, 0.1, 0.1, 0.05], im:  [0,0,0,0,0,0]}
 }
 
-watch(props.instrument,()=>{    
-    console.log(props.instrument);     
-},{ deep: true})
-
 watch(preset,()=>{
     const coeff = instrumentCoeff[preset.value]
-    console.log(preset.value, coeff );
-    
-    if(preset.value==='custom')    return loadCustom()
-    
-    emit('update:instrument',coeff)
+    if(preset.value==='custom') loadCustom()
+    else emit('update:instrument',coeff)
 })
 
+onMounted(()=>{
+    const coeff = instrumentCoeff[preset.value]
+    if(preset.value==='custom') loadCustom()
+    else emit('update:instrument',coeff)
+})
 const loadCustom = ()=>{
     const re = safeParse(real.value)
     const i = safeParse(im.value)
@@ -82,7 +78,7 @@ const safeParse = (val:string)=>{
         <div class="custom" v-if="preset==='custom'">
             <h3>custom harmonics</h3>
             <label><span>Real:</span> <input @keydown="update" name="real" v-model="real" /></label>
-            <label><span>Im:</span> <input name="im" v-model="im" /></label>
+            <label><span>Im:</span> <input @keydown="update" name="im" v-model="im" /></label>
         </div>
     </div>
 </div>
