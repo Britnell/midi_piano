@@ -141,10 +141,18 @@ function drawBars(ctx : CanvasRenderingContext2D, canvas:HTMLCanvasElement){
 
 
 </script>
-<style scoped>
-</style>
 <template>
-    <h2>Notation</h2>
-    <canvas ref="canvasRef" width="800" height="400"></canvas>
+    <section>
+
+        <h2>Notation</h2>
+        <canvas ref="canvasRef" width="800" height="400"></canvas>
+    </section>
 
 </template>
+    <style scoped>
+    section {
+        max-width: 800px;
+        padding: 1rem;
+        margin: 0 auto;
+    }
+    </style>

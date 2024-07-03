@@ -44,27 +44,40 @@ watch(selectedDevice,(next)=> localStorage.setItem(saveMidiKey,next) )
 
 <template>
   <div>
-    <div v-if="!audioEnabled">
-      <p>Please click or press any key to enable audio</p>
-    </div>
-    <h1>MIDI Piano Web App</h1>
-    <div>
-
+    
+    <header>
+      <h1>MIDI Piano Web App</h1>
+      
       <select v-model="selectedDevice">
         <option value="">Select MIDI input</option>
         <option v-for="device in midiDevices" :key="device.id" :value="device.id">
           {{ device.name }}
         </option>
       </select>
+    </header>
+    
+    <div v-if="!audioEnabled" >
+      <div class="overlay"></div>
+      <div class="enable">
+        <p>Please click or press any key to enable audio</p>
+      </div>
     </div>
+    
     <Instruments v-model:instrument="instrument" />
-    <Keyboard :activeNotes="activeNotes" />
     <Notation :activeNotes="activeNotes" />
+    <Keyboard :activeNotes="activeNotes" />
   </div>
 </template>
 
 
 <style scoped>
+h1 { margin: 0; }
+header {
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+}
 #keyboard {
   display: flex;
   justify-content: center;
@@ -75,6 +88,24 @@ watch(selectedDevice,(next)=> localStorage.setItem(saveMidiKey,next) )
 canvas {
   display: block;
   margin: 20px auto;
+}
+
+.enable {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  padding: 2rem;
+  border: 2px solid black;
+  transform: translate(-50%,-50%);
+  background: white;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0002;
 }
 
 </style>

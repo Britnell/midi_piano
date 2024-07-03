@@ -6,8 +6,8 @@ const emit = defineEmits<{
   (e: 'update:instrument', value: { real: number[], im: number[] }): void
 }>();
 
-const defaultRe = '[0, 0.5, 0.3, 0.1, 0.1, 0.01 ]'
-const defaultIm = '[0, 0, 0 ,0 ,0, 0]'
+const defaultRe = '0, 0.5, 0.3, 0.1, 0.1, 0.01 '
+const defaultIm = '0, 0, 0 ,0 ,0, 0'
 const instrumentList = ['piano', '2harmonic', '1harmonic','beep',  'custom' ]
 
 const preset = cachedRef('instrumentPreset',instrumentList[0])
@@ -34,8 +34,8 @@ onMounted(()=>{
     else emit('update:instrument',coeff)
 })
 const loadCustom = ()=>{
-    const re = safeParse(real.value)
-    const i = safeParse(im.value)
+    const re = safeParse(`[${real.value}]`)
+    const i = safeParse(`[${im.value}]`)
     if(!re || !i) {
         real.value = defaultRe
         im.value = defaultIm
@@ -54,9 +54,6 @@ const safeParse = (val:string)=>{
     }
 }
 
-// watch([real,im],()=>{
-    // })
-    
     const update = (ev)=>{
         if(ev.key==='Enter') return loadCustom()
     }
@@ -65,23 +62,24 @@ const safeParse = (val:string)=>{
 <template>
     <section>
 
-        <h2>instruments</h2>
         <div class="grid">
-
-        <div>
-            <select v-model="preset">
-                <option v-for="ins in instrumentList" :key="ins" :value="ins" >{{ ins }}</option>
-            </select>
-    </div>
-    <div>
-
-        <div class="custom" v-if="preset==='custom'">
-            <h3>custom harmonics</h3>
-            <label><span>Real:</span> <input @keydown="update" name="real" v-model="real" /></label>
-            <label><span>Im:</span> <input @keydown="update" name="im" v-model="im" /></label>
+            <div>
+        <h2>Sound</h2>
+        <select v-model="preset">
+                    <option v-for="ins in instrumentList" :key="ins" :value="ins" >{{ ins }}</option>
+                </select>
+            </div>
+            <div>
+                <div class="" v-if="preset==='custom'">
+                    <h3>custom harmonics</h3>
+                    <div class="custom">
+                        <label><span>Real:</span> <input @keydown="update" name="real" v-model="real" /></label>
+                        <label><span>Im:</span> <input @keydown="update" name="im" v-model="im" /></label>
+                        <button @click="update">update</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 </section>
     
 </template>
