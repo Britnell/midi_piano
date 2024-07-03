@@ -71,7 +71,6 @@ watch(selectedDevice,(next)=> localStorage.setItem(saveMidiKey,next) )
 
 
 <style scoped>
-h1 { margin: 0; }
 header {
   display: flex;
   justify-content:space-between;

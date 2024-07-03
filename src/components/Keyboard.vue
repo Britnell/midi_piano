@@ -24,6 +24,7 @@ const keyboard = createKeyboard()
 <style scoped>
 .keyboard {
     display: flex;
+    font-family: system-ui, sans-serif;
 }
 .key {
     flex: 0 0 auto;
@@ -37,6 +38,8 @@ const keyboard = createKeyboard()
 
     color: black;
     background: white;
+
+    font-size: .8rem;
 }
 
 .key:where(:nth-child(12n+2),

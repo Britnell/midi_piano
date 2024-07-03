@@ -92,9 +92,6 @@ const safeParse = (val:string)=>{
         display: grid;
         grid-template-columns: 200px 1fr;
     }
-    h2, h3 {
-        margin: 0;
-    }
     label {
         display: flex;
         gap: .8rem;
