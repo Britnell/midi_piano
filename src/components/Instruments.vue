@@ -8,7 +8,7 @@ const emit = defineEmits<{
 
 const defaultRe = '0, 0.5, 0.3, 0.1, 0.1, 0.01 '
 const defaultIm = '0, 0, 0 ,0 ,0, 0'
-const instrumentList = ['piano', '2harmonic', '1harmonic','beep',  'custom' ]
+const instrumentList = ['beep','1 harmonic', '2 harmonic','organ','custom' ]
 
 const preset = cachedRef('instrumentPreset',instrumentList[0])
 const real = cachedRef('customInstrumentReal',defaultRe)
@@ -17,9 +17,9 @@ const im = cachedRef('customInstrumentIm',defaultIm)
 
 const instrumentCoeff: Record<string, { real: number[]; im: number[] }> = {
     beep: { real: [0,1], im: [0,0] },
-    '1harmonic': { real: [ 0, 1, 0.3 ], im: [0,0,0] },
-    '2harmonic': { real: [ 0, 1, 0.3, 0.1 ], im: [0,0,0,0] },
-    piano: { real: [0, 0.4, 0.4, 0.1, 0.1, 0.05], im:  [0,0,0,0,0,0]}
+    '1 harmonic': { real: [ 0, 1, 0.3 ], im: [0,0,0] },
+    '2 harmonic': { real: [ 0, 1, 0.3, 0.1 ], im: [0,0,0,0] },
+    organ: { real: [0, 0.4, 0.4, 0.1, 0.1, 0.05], im:  [0,0,0,0,0,0]}
 }
 
 watch(preset,()=>{
