@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps(['activeNotes'])
 const activeKeys = computed(() => Array.from<number>(props.activeNotes.keys()) )
-const canvasRef = ref<HTMLCanvasElement>(null);
+const canvasRef = ref<HTMLCanvasElement | null>(null);
 
 onMounted(()=>{
     drawNotation(activeKeys.value)
@@ -36,6 +36,7 @@ const drawLine = ({ctx,x,y}: {x:number, y:number , ctx:CanvasRenderingContext2D 
 }
 function drawNotation(notes: number[]) {
         const canvas = canvasRef.value
+        if(!canvas) return;
         const ctx = canvas.getContext('2d');
 
         if(!ctx) return;

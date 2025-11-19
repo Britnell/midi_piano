@@ -15,7 +15,7 @@ const real = cachedRef('customInstrumentReal',defaultRe)
 const im = cachedRef('customInstrumentIm',defaultIm)
 
 
-const instrumentCoeff = {
+const instrumentCoeff: Record<string, { real: number[]; im: number[] }> = {
     beep: { real: [0,1], im: [0,0] },
     '1harmonic': { real: [ 0, 1, 0.3 ], im: [0,0,0] },
     '2harmonic': { real: [ 0, 1, 0.3, 0.1 ], im: [0,0,0,0] },
@@ -54,7 +54,7 @@ const safeParse = (val:string)=>{
     }
 }
 
-    const update = (ev)=>{
+    const update = (ev: KeyboardEvent)=>{
         if(ev.key==='Enter') return loadCustom()
     }
 
@@ -75,7 +75,7 @@ const safeParse = (val:string)=>{
                     <div class="custom">
                         <label><span>Real:</span> <input @keydown="update" name="real" v-model="real" /></label>
                         <label><span>Im:</span> <input @keydown="update" name="im" v-model="im" /></label>
-                        <button @click="update">update</button>
+                        <button @click="loadCustom">update</button>
                     </div>
                 </div>
             </div>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, compile } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { initMIDI, useMIDINote, type MIDIDevice } from './midi';
 import Keyboard from './components/Keyboard.vue'
 import Notation from './components/Notation.vue'
 import Instruments from './components/Instruments.vue'
-import { cachedRef } from './lib';
+
 
 const audioEnabled = ref(false)
 const instrument = ref({

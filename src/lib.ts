@@ -1,4 +1,4 @@
-import { ref, watchEffect, type Ref, type UnwrapRef
+import { ref, watchEffect, type Ref
  } from "vue";
 
 export const readLocal = <T>(key: string, initial: T): T => {
@@ -13,11 +13,11 @@ export const readLocal = <T>(key: string, initial: T): T => {
 
   export const writeLocal = (key:string,value:string)=> localStorage.setItem(key, value);
   
-  export function cachedRef<T>(key: string, initial: T): Ref<UnwrapRef<T>> {
+  export function cachedRef<T>(key: string, initial: T): Ref<T> {
     const state = ref<T>(initial);
-    state.value = readLocal<T>(key, initial) as UnwrapRef<T>;
+    state.value = readLocal<T>(key, initial);
   
     watchEffect(() =>  writeLocal(key, JSON.stringify(state.value)) );
-    return state;
+    return state as Ref<T>;
   }
   

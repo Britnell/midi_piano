@@ -1,5 +1,5 @@
 import { ref, watch, Ref } from "vue";
-import { MIDIMessageEvent } from "webmidi";
+
 
 export interface MIDIDevice {
   id: string;
@@ -73,7 +73,7 @@ export function useMIDINote(
       const input = midiAccess.inputs.get(selectedDevice.value);
       if (!input) return;
 
-      input.onmidimessage = (event: MIDIMessageEvent) => {
+      input.onmidimessage = (event: any) => {
         const [status, note, velocity] = event.data;
         const command = status >> 4;
 
